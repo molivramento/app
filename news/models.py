@@ -14,6 +14,9 @@ class News(models.Model):
         ('technology', 'Technology')
     ))
 
+    class Meta:
+        ordering = ['-pub_date']
+
     def __str__(self):
         return self.title
 
