@@ -68,6 +68,7 @@ class NewsAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+# TODO: add delete method, put method and expire time for link
 class LinkAPIView(APIView):
     def post(self, request) -> Response:
         news_id = request.data.get('news_id')
