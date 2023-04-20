@@ -75,7 +75,6 @@ class LinkAPIView(APIView):
         try:
             news = News.objects.get(id=news_id)
             link = self.generate_link(news.id)
-            Link.objects.create(token=link.split('/')[-1], news=news)
             return Response({'link': link}, status=status.HTTP_201_CREATED)
         except News.DoesNotExist:
             return Response({'message': 'News not found'}, status=status.HTTP_404_NOT_FOUND)
