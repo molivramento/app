@@ -88,9 +88,7 @@ class LinkAPIView(APIView):
 
     def get(self, request, token: str):
         try:
-            print(token)
             link = Link.objects.get(token=token)
-            print(link)
             serializer = NewsSerializer(link.news)
             return Response(serializer.data)
         except Link.DoesNotExist:
