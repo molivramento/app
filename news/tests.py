@@ -46,6 +46,7 @@ class NewsAPIViewTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected_data = NewsSerializer(News.objects.get(pk=self.news.id)).data
         self.assertEqual(response.data, expected_data)
+        
     # O erro ocorre pois a tabela "news" possui como campo obrigatório a coluna "category" que não foi enviado no teste.
     # Correção, bastou adicionar o valor da categoria no dicionário: 'category': 'technology' 
     def test_create_news(self):
