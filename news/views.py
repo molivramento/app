@@ -1,10 +1,14 @@
+from datetime import datetime, timedelta
+
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
-from news.models import News
-from news.serializers import NewsSerializer
+from news.models import News, Link
+from news.serializers import NewsSerializer, LinkSerializer
 from collections import OrderedDict
+from django.utils.crypto import get_random_string
 
 
 class NewsPagination(PageNumberPagination):
@@ -62,3 +66,32 @@ class NewsAPIView(APIView):
 
         news_article.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class LinkAPIView(APIView):
+    def post(self, request) -> Response:
+        news_id = request.data.get('news_id')
+        try:
+            news = News.objects.get(id=news_id)
+            link = self.generate_link(news.id)
+            Link.objects.create(token=link.split('/')[-1], news=news)
+            return Response({'link': link}, status=status.HTTP_201_CREATED)
+        except News.DoesNotExist:
+            return Response({'message': 'News not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def generate_link(self, news_id):
+        token = get_random_string(length=16)
+        news = News.objects.get(pk=news_id)
+        link = reverse('link-api-get_link', kwargs={'token': token})
+        Link.objects.create(token=token, news=news)
+        return link
+
+    def get(self, request, token: str):
+        try:
+            print(token)
+            link = Link.objects.get(token=token)
+            print(link)
+            serializer = NewsSerializer(link.news)
+            return Response(serializer.data)
+        except Link.DoesNotExist:
+            return Response({'message': 'This link does not exist'}, status=status.HTTP_404_NOT_FOUND)

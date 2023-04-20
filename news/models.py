@@ -25,3 +25,13 @@ class News(models.Model):
 
     def get_absolute_url(self):
         return reverse('news_detail', args=[str(self.id)])
+
+
+class Link(models.Model):
+    token = models.CharField(max_length=16)
+    news = models.ForeignKey(News, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.token
+
