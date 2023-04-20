@@ -93,3 +93,11 @@ class LinkAPIView(APIView):
             return Response(serializer.data)
         except Link.DoesNotExist:
             return Response({'message': 'This link does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk: int):
+        try:
+            link = Link.objects.get(pk=pk)
+            link.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Link.DoesNotExist:
+            return Response({'message': 'This link does not exist'}, status=status.HTTP_404_NOT_FOUND)
