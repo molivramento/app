@@ -4,6 +4,7 @@ from rest_framework.test import APITestCase
 from news.models import News
 from news.serializers import NewsSerializer
 
+
 class NewsAPIViewTestCase(APITestCase):
     def setUp(self):
         self.url = reverse('news-api')
@@ -12,13 +13,26 @@ class NewsAPIViewTestCase(APITestCase):
             'content': 'This is a test news article.',
             'author': 'John Doe',
         }
+        self.news_data1 = {
+            'title': 'Test News Article 1',
+            'content': 'This is a test news article 1.',
+            'author': 'John Doe',
+        }
+        self.news_data2 = {
+            'title': 'Test News Article 2',
+            'content': 'This is a test news article 2.',
+            'author': 'John Doe',
+        }
         self.news = News.objects.create(**self.news_data)
+        self.news1 = News.objects.create(**self.news_data1)
+        self.news2 = News.objects.create(**self.news_data2)
     
     def test_get_all_news(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        expected_data = NewsSerializer(News.objects.all(), many=True).data
-        self.assertEqual(response.data, expected_data)
+        self.assertEqual(len(response.data['results']), 2)
+        self.assertEqual(response.data['results'][0]['title'], self.news.title)
+        self.assertEqual(response.data['results'][1]['title'], self.news1.title)
     
     def test_retrive_one_news(self):
         url = reverse('news-api-detail', args=[self.news.id])
